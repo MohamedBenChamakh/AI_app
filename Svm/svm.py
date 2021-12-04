@@ -6,10 +6,9 @@ import librosa # Pour l'extraction des features et la lecture des fichiers wav
 import librosa.display # Pour récupérer les spectrogrammes des audio
 import librosa.feature
 
-import time
 
 import os # C'est ce qui va nous permettre d'itérer sur les fichiers de l'environnement de travail
-import sklearn
+
 import joblib
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.model_selection import train_test_split, validation_curve, RandomizedSearchCV # Split de dataset et optimisation des hyperparamètres
@@ -30,7 +29,7 @@ from sklearn.metrics import accuracy_score
 
 def svm():
     print("RBF Kernel")
-    df = pd.read_csv("../Data/features_3_sec.csv")
+    df = pd.read_csv("../data/features_3_sec.csv")
     df = df.drop(labels='filename', axis=1)
     #print(df.head())
     #print(df.shape)
@@ -71,7 +70,7 @@ def grid_search(data_train,labels_train):
 
 def predict(audio):
     #audio="reggae.00000.wav"
-    csv_file = csv.reader(open("../Data/features_30_sec.csv", "r"), delimiter=",")
+    csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
     data=[]
     for row in csv_file:
         if audio == row[0]:
@@ -106,7 +105,7 @@ def predict(audio):
 svm()
 #predict("rock.00007.wav")
 
-csv_file = csv.reader(open("../Data/features_30_sec.csv", "r"), delimiter=",")
+csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
 next(csv_file, None)
 
 for row in csv_file:
