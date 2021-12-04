@@ -13,6 +13,7 @@ import sklearn
 import joblib
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.model_selection import train_test_split, validation_curve, RandomizedSearchCV # Split de dataset et optimisation des hyperparamètres
+from sklearn import metrics
 
 from sklearn.svm import SVC # SVM
 import pickle
@@ -29,11 +30,10 @@ from sklearn.metrics import accuracy_score
 
 def svm():
     print("RBF Kernel")
-    df = pd.read_csv("../Data/features_30_sec.csv")
+    df = pd.read_csv("../Data/features_3_sec.csv")
     df = df.drop(labels='filename', axis=1)
     #print(df.head())
     #print(df.shape)
-
     labels=df.iloc[:,-1]
     #print(labels)
     encoder=LabelEncoder()
@@ -42,22 +42,24 @@ def svm():
    
     standardizer=StandardScaler()
     data=standardizer.fit_transform(np.array(df.iloc[:,:-1],dtype=float))
-    data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size = 0.3)
+
+    data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size = 0.33)
     print('length of data_train:',len(data_train))
     print('length of data_test:',len(data_test))
-    model = SVC(kernel='poly', C=50,degree=3)
+    model = SVC(kernel='rbf', C=10)
     model.fit(data_train, labels_train)
     modelname = 'model_svc.sav'
-    #os.remove(modelname)
-    #time.sleep(0.5)
+    os.remove(modelname)
     pickle.dump(model, open(modelname, 'wb'))
-    print('Train score : ', model.score(data_train,labels_train))
-    print('Test score : ', model.score(data_test,labels_test))
+    #print('Train score : ', model.score(data_train,labels_train))
+    #print('Test score : ', model.score(data_test,labels_test))
     pred = model.predict(data_test)
+    #print("Accuracy:",metrics.accuracy_score(labels_test, pred))
     #print(pred)
     #print(confusion_matrix(labels_test, pred))
     #print(classification_report(labels_test, pred))
     #grid_search(data_train,labels_train)
+    return {"Train_score": model.score(data_train,labels_train),"Test_score":model.score(data_test,labels_test),"Accuracy":metrics.accuracy_score(labels_test, pred)}
 
 def grid_search(data_train,labels_train):
     tuned_parameters = [{'kernel': ['rbf'],'C': [1, 10, 100, 1000]},
@@ -70,13 +72,11 @@ def grid_search(data_train,labels_train):
 def predict(audio):
     #audio="reggae.00000.wav"
     csv_file = csv.reader(open("../Data/features_30_sec.csv", "r"), delimiter=",")
-    next(csv_file, None)
-
     data=[]
     for row in csv_file:
-        #if current rows 2nd value is equal to input, print that row
         if audio == row[0]:
             data=np.array([row[1:-1]])
+    data=data.astype(float)
     if len(data) >0 :       
         svm = joblib.load('model_svc.sav')
         print("----------------------------------- Predicted Labels -----------------------------------\n")
@@ -94,17 +94,17 @@ def predict(audio):
             8: "reggae",
             9: "rock",
         }
-        #print(preds)
+        print(preds)
         func = switcher.get(preds[0], lambda: "Invalid gender")
         print("Audio : ",audio)
         print("Genre: ",func)
         print("")
         print("----------------------------------------------------------------------------------------")
+        return func
 
-
+"""
 svm()
-#predict("metal.00000.wav")
-
+#predict("rock.00007.wav")
 
 csv_file = csv.reader(open("../Data/features_30_sec.csv", "r"), delimiter=",")
 next(csv_file, None)
@@ -112,3 +112,4 @@ next(csv_file, None)
 for row in csv_file:
     predict(row[0])
     time.sleep(0.5)
+"""

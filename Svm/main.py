@@ -1,14 +1,17 @@
-from flask import Flask
+from flask import Flask, redirect, url_for, request,jsonify
+from svm import *
+
 
 app = Flask(__name__)
 
-
-
-@app.route("/", methods=['POST'])
-def SVM_service(wav_music):
-  
-    return "<h1 style='color:blue'>Hello There!</h1>"
-
+@app.route("/svm", methods=['POST'])
+def SVM_service():
+    if request.method == 'POST':
+        json_data = request.get_json(force=True) 
+        wav_music=json_data['wav_music']
+        data=svm()
+        genre=predict(wav_music)
+        return jsonify({"genre":genre,"svm":data})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug = True)
