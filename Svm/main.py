@@ -9,9 +9,9 @@ def SVM_service():
     if request.method == 'POST':
         json_data = request.get_json(force=True) 
         wav_music=json_data['wav_music']
-        data=svm()
+        
         genre=predict(wav_music)
-        return jsonify({"genre":genre,"svm":data})
+        return jsonify({"genre":genre})
 
 if __name__ == '__main__':
     app.run(debug = True)
