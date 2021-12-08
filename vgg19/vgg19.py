@@ -1,3 +1,4 @@
+import csv
 import os
 import pandas as pd # Pour le dataframe
 from keras.applications.vgg19 import VGG19
@@ -25,36 +26,69 @@ def get_features(img_path):
     flatten = model.predict(x)
     return list(flatten[0])
 
-X = []
+def vgg19():
+    return "vgg19"
 
-bike_plots = []
-car_plots = []
+def predict(wav_music):
+    X = []
+    
 
-genre=['blues','classical','country','disco','hiphop','jazz','metal','pop','reggae','rock']
-filenames=[]
+    genre=['blues','classical','country','disco','hiphop','jazz','metal','pop','reggae','rock']
+    filenames=[]
 
-df = pd.read_csv("../data/features_30_sec.csv")
-df = df.drop(labels='filename', axis=1)
-labels=df.iloc[:,-1]
+    df = pd.read_csv("../data/features_30_sec.csv")
+    df = df.drop(labels='filename', axis=1)
+    labels=df.iloc[:,-1]
 
-encoder=LabelEncoder()
-labels=encoder.fit_transform(labels)
+    encoder=LabelEncoder()
+    labels=encoder.fit_transform(labels)
 
-for g in genre:
-    for (_,_,filenames) in os.walk('../data/images_original/'+g):
-        for f in filenames:
-         X.append(get_features('../data/images_original/'+g +'/'+ f))
+    for g in genre:
+        for (_,_,filenames) in os.walk('../data/images_original/'+g):
+            for f in filenames:
+             X.append(get_features('../data/images_original/'+g +'/'+ f))
 
-print(len(X))
-print(len(labels))
+    # print(len(X))
+    # print(len(labels))
 
-X_train, X_test, y_train, y_test = train_test_split(X, labels[:-1], test_size=0.30, random_state=42, stratify=labels[:-1])
+    X_train, X_test, y_train, y_test = train_test_split(X, labels[:-1], test_size=0.30, random_state=42, stratify=labels[:-1])
 
-clf = LinearSVC(random_state=0, tol=1e-5)
-clf.fit(X_train, y_train)
-# modelname = 'model_linearSvc.sav'
-# pickle.dump(model, open(clf, 'wb'))
-predicted = clf.predict(X_test)
+    clf = LinearSVC(random_state=0, tol=1e-5)
+    clf.fit(X_train, y_train)
+    # modelname = 'model_linearSvc.sav'
+    # pickle.dump(model, open(clf, 'wb'))
+    csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
+    data=[]
+    for row in csv_file:
+        if wav_music == row[0]:
+            data=np.array([row[1:-1]])
+    data=data.astype(float)
+    
+    if len(data) >0 :       
+            svm = joblib.load('model_svc.sav')
+            print("----------------------------------- Predicted Labels -----------------------------------\n")
+            predicted = clf.predict(data)
+            #print(preds)
+            switcher = {
+                0:"blues",
+                1: "classical",
+                2: "country",
+                3: "disco",
+                4: "hiphop",
+                5: "jazz",
+                6: "metal",
+                7: "pop",
+                8: "reggae",
+                9: "rock",
+            }
+            print(predicted)
+            func = switcher.get(predicted[0], lambda: "Invalid gender")
+            print("Audio : ",wav_music)
+            print("Genre: ",func)
+            print("")
+            print("----------------------------------------------------------------------------------------")
+            return func
+    # get the accuracy
+    #print (accuracy_score(y_test, predicted))
 
-# get the accuracy
-print (accuracy_score(y_test, predicted))
+predict(wav_music)

@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, request,jsonify
-from svm import *
+from vgg19 import *
 
 
 app = Flask(__name__)
@@ -9,9 +9,9 @@ def SVM_service():
     if request.method == 'POST':
         json_data = request.get_json(force=True) 
         wav_music=json_data['wav_music']
-        data=svm()
+        data=vgg19()
         genre=predict(wav_music)
-        return jsonify({"genre":genre,"svm":data})
+        return jsonify({"genre":genre,"vgg19":data})
 
 if __name__ == '__main__':
     app.run(debug = True)
