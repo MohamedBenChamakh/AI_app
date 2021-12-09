@@ -55,7 +55,7 @@ def svm():
     print("Accuracy on test set: {:.3f}".format(model.score(data_test, labels_test)))
     print('Train score : ', model.score(data_train,labels_train))
     print('Test score : ', model.score(data_test,labels_test))
-    pred = model.predict(data_test)
+    #pred = model.predict(data_test)
     #print("Accuracy:",metrics.accuracy_score(labels_test, pred))
     #print(pred)
     #print(confusion_matrix(labels_test, pred))
@@ -107,15 +107,3 @@ def predict(audio):
         print("----------------------------------------------------------------------------------------")
         return func
 
-#svm()
-#predict("blues.00007.wav")
-
-"""
-csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
-next(csv_file, None)
-
-
-for row in csv_file:
-    predict(row[0])
-    sleep(0.1)
-"""

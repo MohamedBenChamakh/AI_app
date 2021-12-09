@@ -7,6 +7,7 @@ from keras.applications.vgg19 import preprocess_input
 from keras.models import Model
 import numpy as np
 
+import joblib
 import pickle
 from sklearn.preprocessing import LabelEncoder 
 
@@ -15,11 +16,9 @@ from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
 
 
-base_model = VGG19(weights='imagenet')
-model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
 
-def get_features(img_path):
-    img = image.load_img(img_path, target_size=(432, 288)).resize((224, 224))
+def get_features(img_path,model):
+    img = image.load_img(img_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
@@ -27,47 +26,57 @@ def get_features(img_path):
     return list(flatten[0])
 
 def vgg19():
-    return "vgg19"
-
-def predict(wav_music):
     X = []
-    
-
     genre=['blues','classical','country','disco','hiphop','jazz','metal','pop','reggae','rock']
+    base_model = VGG19(weights='imagenet')
+    model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
+
+
     filenames=[]
 
     df = pd.read_csv("../data/features_30_sec.csv")
     df = df.drop(labels='filename', axis=1)
     labels=df.iloc[:,-1]
-
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
+    
 
     for g in genre:
         for (_,_,filenames) in os.walk('../data/images_original/'+g):
             for f in filenames:
-             X.append(get_features('../data/images_original/'+g +'/'+ f))
+                X.append(get_features('../data/images_original/'+g +'/'+ f,model))
 
-    # print(len(X))
-    # print(len(labels))
 
-    X_train, X_test, y_train, y_test = train_test_split(X, labels[:-1], test_size=0.30, random_state=42, stratify=labels[:-1])
+
+    X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.08, random_state=42, stratify=labels)
 
     clf = LinearSVC(random_state=0, tol=1e-5)
     clf.fit(X_train, y_train)
+
+    modelname = 'model_vgg19.sav'
+    pickle.dump(clf, open(modelname, 'wb'))
+    print("Accuracy on training set: {:.3f}".format(clf.score(X_train, y_train)))
+    print("Accuracy on test set: {:.3f}".format(clf.score(X_test, y_test)))
+    print('Train score : ', clf.score(X_train,y_train))
+    print('Test score : ', clf.score(X_test,y_test))
+
+
+
+def predict(wav_music):
     # modelname = 'model_linearSvc.sav'
     # pickle.dump(model, open(clf, 'wb'))
+    base_model = VGG19(weights='imagenet')
+    model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
     csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
     data=[]
     for row in csv_file:
         if wav_music == row[0]:
-            data=np.array([row[1:-1]])
-    data=data.astype(float)
+            data=get_features('../data/images_original/'+row[-1] +'/'+ wav_music.replace(".","",1).replace("wav","png",1),model)
     
     if len(data) >0 :       
-            svm = joblib.load('model_svc.sav')
+            svm = joblib.load('model_vgg19.sav')
             print("----------------------------------- Predicted Labels -----------------------------------\n")
-            predicted = clf.predict(data)
+            predicted = svm.predict([data])
             #print(preds)
             switcher = {
                 0:"blues",
@@ -91,4 +100,5 @@ def predict(wav_music):
     # get the accuracy
     #print (accuracy_score(y_test, predicted))
 
-predict(wav_music)
+predict("reggae.00000.wav")
+#vgg19()

@@ -1,3 +1,5 @@
-Data
-Svm\model_svc.sav
-Svm\__pycache__
+data
+svm/model_svc.sav
+svm/__pycache__
+frontend/audio-classification/.angular
+frontend/audio-classification/node_modules
