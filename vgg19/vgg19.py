@@ -1,6 +1,6 @@
 import csv
 import os
-import pandas as pd # Pour le dataframe
+import pandas as pd 
 from keras.applications.vgg19 import VGG19
 from keras.preprocessing import image
 from keras.applications.vgg19 import preprocess_input
@@ -31,7 +31,6 @@ def vgg19():
     base_model = VGG19(weights='imagenet')
     model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
 
-
     filenames=[]
 
     df = pd.read_csv("../data/features_30_sec.csv")
@@ -40,13 +39,10 @@ def vgg19():
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
     
-
     for g in genre:
         for (_,_,filenames) in os.walk('../data/images_original/'+g):
             for f in filenames:
                 X.append(get_features('../data/images_original/'+g +'/'+ f,model))
-
-
 
     X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.08, random_state=42, stratify=labels)
 
@@ -60,11 +56,7 @@ def vgg19():
     print('Train score : ', clf.score(X_train,y_train))
     print('Test score : ', clf.score(X_test,y_test))
 
-
-
 def predict(wav_music):
-    # modelname = 'model_linearSvc.sav'
-    # pickle.dump(model, open(clf, 'wb'))
     base_model = VGG19(weights='imagenet')
     model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
     csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
@@ -77,7 +69,6 @@ def predict(wav_music):
             svm = joblib.load('model_vgg19.sav')
             print("----------------------------------- Predicted Labels -----------------------------------\n")
             predicted = svm.predict([data])
-            #print(preds)
             switcher = {
                 0:"blues",
                 1: "classical",
@@ -100,5 +91,5 @@ def predict(wav_music):
     # get the accuracy
     #print (accuracy_score(y_test, predicted))
 
-predict("reggae.00000.wav")
+#predict("reggae.00000.wav")
 #vgg19()

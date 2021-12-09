@@ -11,16 +11,14 @@ import os # C'est ce qui va nous permettre d'itérer sur les fichiers de l'envir
 
 from time import sleep
 import joblib
-from sklearn.feature_selection import VarianceThreshold
-from sklearn.model_selection import train_test_split, validation_curve, RandomizedSearchCV # Split de dataset et optimisation des hyperparamètres
+from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
-from sklearn.svm import SVC # SVM
+from sklearn.svm import SVC 
 import pickle
 from sklearn.model_selection import train_test_split  
 from sklearn.preprocessing import LabelEncoder 
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report, confusion_matrix
 
 import csv
 
@@ -32,13 +30,12 @@ def svm():
     print("RBF Kernel")
     df = pd.read_csv("../data/features_3_sec.csv")
     df = df.drop(labels='filename', axis=1)
-    #print(df.head())
-    #print(df.shape)
+
     labels=df.iloc[:,-1]
-    #print(labels)
+
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
-    #print(labels)
+
    
     standardizer=StandardScaler()
     data=standardizer.fit_transform(np.array(df.iloc[:,:-1],dtype=float))
@@ -49,7 +46,6 @@ def svm():
     model = SVC(kernel='rbf', C=100)
     model.fit(data_train, labels_train)
     modelname = 'model_svm.sav'
-    #os.remove(modelname)
     pickle.dump(model, open(modelname, 'wb'))
     print("Accuracy on training set: {:.3f}".format(model.score(data_train, labels_train)))
     print("Accuracy on test set: {:.3f}".format(model.score(data_test, labels_test)))
@@ -85,7 +81,6 @@ def predict(audio):
     if len(data) >0 :       
         svm = joblib.load('model_svm.sav')
         print("----------------------------------- Predicted Labels -----------------------------------\n")
-        
         preds = svm.predict(data)
         switcher = {
             0:"blues",
@@ -99,7 +94,6 @@ def predict(audio):
             8: "reggae",
             9: "rock",
         }
-        #print(preds)
         func = switcher.get(preds[0], lambda: "Invalid gender")
         print("Audio : ",audio)
         print("Genre: ",func)
