@@ -1,10 +1,10 @@
 from flask import Flask, redirect, url_for, request,jsonify
-from svm import *
+from vgg19 import *
 
 
 app = Flask(__name__)
 
-@app.route("/svm", methods=['POST'])
+@app.route("/vgg19", methods=['POST'])
 def SVM_service():
     if request.method == 'POST':
         json_data = request.get_json(force=True) 

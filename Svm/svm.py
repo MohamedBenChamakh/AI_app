@@ -6,21 +6,19 @@ import librosa # Pour l'extraction des features et la lecture des fichiers wav
 import librosa.display # Pour récupérer les spectrogrammes des audio
 import librosa.feature
 
-import time
 
 import os # C'est ce qui va nous permettre d'itérer sur les fichiers de l'environnement de travail
-import sklearn
+
+from time import sleep
 import joblib
-from sklearn.feature_selection import VarianceThreshold
-from sklearn.model_selection import train_test_split, validation_curve, RandomizedSearchCV # Split de dataset et optimisation des hyperparamètres
+from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
-from sklearn.svm import SVC # SVM
+from sklearn.svm import SVC 
 import pickle
 from sklearn.model_selection import train_test_split  
 from sklearn.preprocessing import LabelEncoder 
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report, confusion_matrix
 
 import csv
 
@@ -30,15 +28,14 @@ from sklearn.metrics import accuracy_score
 
 def svm():
     print("RBF Kernel")
-    df = pd.read_csv("../Data/features_3_sec.csv")
+    df = pd.read_csv("../data/features_3_sec.csv")
     df = df.drop(labels='filename', axis=1)
-    #print(df.head())
-    #print(df.shape)
+
     labels=df.iloc[:,-1]
-    #print(labels)
+
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
-    #print(labels)
+
    
     standardizer=StandardScaler()
     data=standardizer.fit_transform(np.array(df.iloc[:,:-1],dtype=float))
@@ -46,14 +43,15 @@ def svm():
     data_train, data_test, labels_train, labels_test = train_test_split(data, labels, test_size = 0.33)
     print('length of data_train:',len(data_train))
     print('length of data_test:',len(data_test))
-    model = SVC(kernel='rbf', C=10)
+    model = SVC(kernel='rbf', C=100)
     model.fit(data_train, labels_train)
-    modelname = 'model_svc.sav'
-    os.remove(modelname)
+    modelname = 'model_svm.sav'
     pickle.dump(model, open(modelname, 'wb'))
-    #print('Train score : ', model.score(data_train,labels_train))
-    #print('Test score : ', model.score(data_test,labels_test))
-    pred = model.predict(data_test)
+    print("Accuracy on training set: {:.3f}".format(model.score(data_train, labels_train)))
+    print("Accuracy on test set: {:.3f}".format(model.score(data_test, labels_test)))
+    print('Train score : ', model.score(data_train,labels_train))
+    print('Test score : ', model.score(data_test,labels_test))
+    #pred = model.predict(data_test)
     #print("Accuracy:",metrics.accuracy_score(labels_test, pred))
     #print(pred)
     #print(confusion_matrix(labels_test, pred))
@@ -70,18 +68,20 @@ def grid_search(data_train,labels_train):
     print(grid_svm.best_params_)
 
 def predict(audio):
-    #audio="reggae.00000.wav"
-    csv_file = csv.reader(open("../Data/features_30_sec.csv", "r"), delimiter=",")
-    data=[]
+    df = pd.read_csv("../data/features_30_sec.csv")
+    df = df.drop(labels='filename', axis=1)
+    standardizer=StandardScaler()
+    data=standardizer.fit_transform(np.array(df.iloc[:,:-1],dtype=float))
+    csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
+    i=0
     for row in csv_file:
         if audio == row[0]:
-            data=np.array([row[1:-1]])
-    data=data.astype(float)
+            data=np.array([data[i]],dtype=float)
+        i+=1
     if len(data) >0 :       
-        svm = joblib.load('model_svc.sav')
+        svm = joblib.load('model_svm.sav')
         print("----------------------------------- Predicted Labels -----------------------------------\n")
         preds = svm.predict(data)
-        #print(preds)
         switcher = {
             0:"blues",
             1: "classical",
@@ -94,7 +94,6 @@ def predict(audio):
             8: "reggae",
             9: "rock",
         }
-        print(preds)
         func = switcher.get(preds[0], lambda: "Invalid gender")
         print("Audio : ",audio)
         print("Genre: ",func)
@@ -102,14 +101,3 @@ def predict(audio):
         print("----------------------------------------------------------------------------------------")
         return func
 
-"""
-svm()
-#predict("rock.00007.wav")
-
-csv_file = csv.reader(open("../Data/features_30_sec.csv", "r"), delimiter=",")
-next(csv_file, None)
-
-for row in csv_file:
-    predict(row[0])
-    time.sleep(0.5)
-"""
