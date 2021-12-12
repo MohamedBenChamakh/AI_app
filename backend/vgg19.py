@@ -56,7 +56,7 @@ def vgg19():
     print('Train score : ', clf.score(X_train,y_train))
     print('Test score : ', clf.score(X_test,y_test))
 
-def predict(wav_music):
+def VGG_predict(wav_music):
     base_model = VGG19(weights='imagenet')
     model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
     csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")

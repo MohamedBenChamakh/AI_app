@@ -32,7 +32,7 @@ def svm():
     df = df.drop(labels='filename', axis=1)
 
     labels=df.iloc[:,-1]
-
+ 
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
 
@@ -51,7 +51,7 @@ def svm():
     print("Accuracy on test set: {:.3f}".format(model.score(data_test, labels_test)))
     print('Train score : ', model.score(data_train,labels_train))
     print('Test score : ', model.score(data_test,labels_test))
-    #pred = model.predict(data_test)
+    pred = model.predict(data_test)
     #print("Accuracy:",metrics.accuracy_score(labels_test, pred))
     #print(pred)
     #print(confusion_matrix(labels_test, pred))
@@ -67,7 +67,7 @@ def grid_search(data_train,labels_train):
     grid_svm.fit(data_train, labels_train)
     print(grid_svm.best_params_)
 
-def predict(audio):
+def SVM_predict(audio):
     df = pd.read_csv("../data/features_30_sec.csv")
     df = df.drop(labels='filename', axis=1)
     standardizer=StandardScaler()
@@ -100,4 +100,3 @@ def predict(audio):
         print("")
         print("----------------------------------------------------------------------------------------")
         return func
-

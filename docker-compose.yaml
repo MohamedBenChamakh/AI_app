@@ -12,4 +12,10 @@ services:
       context: ./vgg19
     ports:
       - 5001:5001
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 4200:4200
+
   
