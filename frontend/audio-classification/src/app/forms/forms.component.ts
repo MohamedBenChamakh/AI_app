@@ -11,6 +11,7 @@ import { catchError, tap } from 'rxjs';
 })
 export class FormsComponent implements OnInit {
   form!: FormGroup;
+  result:string="";
 
   
   constructor(
@@ -31,6 +32,7 @@ export class FormsComponent implements OnInit {
 
   initForm(): void {
     this.form = this.formBuilder.group({
+      algo:'',
       file:['']
     });
   }
@@ -40,9 +42,10 @@ export class FormsComponent implements OnInit {
     formData.append('file', this.form.get('file').value);
     console.log(this.form.value);
     
-    this.httpClient.post("http://localhost:4200/api/svm",formData).subscribe(
+    this.httpClient.post("http://localhost:4200/api/"+this.form.value['algo'],formData).subscribe(
       (response: any) => {
         console.log(response);
+        this.result="Prédiction : "+response.genre;
 
       },
     )

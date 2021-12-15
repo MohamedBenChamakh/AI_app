@@ -6,19 +6,14 @@ app = Flask(__name__)
 
 @app.route("/svm", methods=['POST'])
 def SVM_service():
-    if request.method == 'POST':
-        json_data = request.get_json(force=True) 
-        wav_music=json_data['wav_music']
-        genre=SVM_predict(wav_music)
+        music=request.files['file'].filename
+        genre=SVM_predict(music)
         return jsonify({"genre":genre})
-
 
 @app.route("/vgg19", methods=['POST'])
 def VGG_service():
-    if request.method == 'POST':
-        json_data = request.get_json(force=True) 
-        wav_music=json_data['wav_music']
-        genre=VGG_predict(wav_music)
+        music=request.files['file'].filename
+        genre=VGG_predict(music)
         return jsonify({"genre":genre})
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@
         <p class="h5">Audio Classifications</p>
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="form-group">
-                <select name="" id="" class="form-control">
+                <select name="" id="" class="form-control" formControlName="algo">
                     <option value="svm">Svm</option>
                     <option value="vgg19">Vgg19</option>
                 </select>
@@ -13,6 +13,7 @@
                 <input type="file" name="wav" id="wav" class="form-control"  (change)="onFileSelect($event)" >
             </div>
             <button class="btn btn-success float-end my-3">Predict</button>
+            <h6 class="text-success">{{result}}</h6>
         </form>
     </div>
 </div>
