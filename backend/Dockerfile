@@ -22,5 +22,4 @@ RUN apt-get install libsndfile1 -y
 RUN pip3 install keras==2.3.1
 RUN pip3 install tensorflow 
 
-EXPOSE 5000
 CMD ["python3","main.py"]

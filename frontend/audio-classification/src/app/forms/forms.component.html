@@ -10,7 +10,7 @@
             </div>
             <div class="form-group">
                 <label for="wav">File</label>
-                <input type="file" name="wav" id="wav" class="form-control" formControlName="file">
+                <input type="file" name="wav" id="wav" class="form-control"  (change)="onFileSelect($event)" >
             </div>
             <button class="btn btn-success float-end my-3">Predict</button>
         </form>

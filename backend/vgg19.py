@@ -49,7 +49,7 @@ def vgg19():
     clf = LinearSVC(random_state=0, tol=1e-5)
     clf.fit(X_train, y_train)
 
-    modelname = 'model_vgg19.sav'
+    modelname = 'models/model_vgg19.sav'
     pickle.dump(clf, open(modelname, 'wb'))
     print("Accuracy on training set: {:.3f}".format(clf.score(X_train, y_train)))
     print("Accuracy on test set: {:.3f}".format(clf.score(X_test, y_test)))
@@ -66,7 +66,7 @@ def VGG_predict(wav_music):
             data=get_features('../data/images_original/'+row[-1] +'/'+ wav_music.replace(".","",1).replace("wav","png",1),model)
     
     if len(data) >0 :       
-            svm = joblib.load('model_vgg19.sav')
+            svm = joblib.load('models/model_vgg19.sav')
             print("----------------------------------- Predicted Labels -----------------------------------\n")
             predicted = svm.predict([data])
             switcher = {

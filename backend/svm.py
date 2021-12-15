@@ -45,7 +45,7 @@ def svm():
     print('length of data_test:',len(data_test))
     model = SVC(kernel='rbf', C=100)
     model.fit(data_train, labels_train)
-    modelname = 'model_svm.sav'
+    modelname = 'models/model_svm.sav'
     pickle.dump(model, open(modelname, 'wb'))
     print("Accuracy on training set: {:.3f}".format(model.score(data_train, labels_train)))
     print("Accuracy on test set: {:.3f}".format(model.score(data_test, labels_test)))
@@ -79,7 +79,7 @@ def SVM_predict(audio):
             data=np.array([data[i]],dtype=float)
         i+=1
     if len(data) >0 :       
-        svm = joblib.load('model_svm.sav')
+        svm = joblib.load('models/model_svm.sav')
         print("----------------------------------- Predicted Labels -----------------------------------\n")
         preds = svm.predict(data)
         switcher = {
