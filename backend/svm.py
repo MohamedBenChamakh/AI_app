@@ -28,7 +28,7 @@ from sklearn.metrics import accuracy_score
 
 def svm():
     print("RBF Kernel")
-    df = pd.read_csv("../data/features_3_sec.csv")
+    df = pd.read_csv("data/features_3_sec.csv")
     df = df.drop(labels='filename', axis=1)
 
     labels=df.iloc[:,-1]
@@ -68,11 +68,11 @@ def grid_search(data_train,labels_train):
     print(grid_svm.best_params_)
 
 def SVM_predict(audio):
-    df = pd.read_csv("../data/features_30_sec.csv")
+    df = pd.read_csv("data/features_30_sec.csv")
     df = df.drop(labels='filename', axis=1)
     standardizer=StandardScaler()
     data=standardizer.fit_transform(np.array(df.iloc[:,:-1],dtype=float))
-    csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
+    csv_file = csv.reader(open("data/features_30_sec.csv", "r"), delimiter=",")
     i=0
     for row in csv_file:
         if audio == row[0]:

@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 @app.route("/svm", methods=['POST'])
 def SVM_service():
+        print("svm")
         music=request.files['file'].filename
         genre=SVM_predict(music)
         return jsonify({"genre":genre})
@@ -17,4 +18,4 @@ def VGG_service():
         return jsonify({"genre":genre})
 
 if __name__ == '__main__':
-    app.run(debug = True,port=5000,host="0.0.0.0")
+    app.run(debug = False,port=5000,host="0.0.0.0")

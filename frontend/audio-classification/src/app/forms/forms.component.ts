@@ -42,7 +42,7 @@ export class FormsComponent implements OnInit {
     formData.append('file', this.form.get('file').value);
     console.log(this.form.value);
     
-    this.httpClient.post("http://localhost:4200/api/"+this.form.value['algo'],formData).subscribe(
+    this.httpClient.post("http://127.0.0.1:4200/api/"+this.form.value['algo'],formData).subscribe(
       (response: any) => {
         console.log(response);
         this.result="Prédiction : "+response.genre;

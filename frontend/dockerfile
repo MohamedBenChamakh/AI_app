@@ -10,9 +10,6 @@ RUN npm install
 
 COPY ./audio-classification /app
 
-RUN npm run build --prod
+EXPOSE 4200
 
-FROM nginx:1.17.1-alpine
-
-COPY --from=build-step /app/dist/audio-classification /usr/share/nginx/html
-
+CMD npm start 
