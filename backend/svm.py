@@ -28,11 +28,11 @@ from sklearn.metrics import accuracy_score
 
 def svm():
     print("RBF Kernel")
-    df = pd.read_csv("../data/features_3_sec.csv")
+    df = pd.read_csv("data/features_3_sec.csv")
     df = df.drop(labels='filename', axis=1)
 
     labels=df.iloc[:,-1]
-
+ 
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
 
@@ -45,13 +45,13 @@ def svm():
     print('length of data_test:',len(data_test))
     model = SVC(kernel='rbf', C=100)
     model.fit(data_train, labels_train)
-    modelname = 'model_svm.sav'
+    modelname = 'models/model_svm.sav'
     pickle.dump(model, open(modelname, 'wb'))
     print("Accuracy on training set: {:.3f}".format(model.score(data_train, labels_train)))
     print("Accuracy on test set: {:.3f}".format(model.score(data_test, labels_test)))
     print('Train score : ', model.score(data_train,labels_train))
     print('Test score : ', model.score(data_test,labels_test))
-    #pred = model.predict(data_test)
+    pred = model.predict(data_test)
     #print("Accuracy:",metrics.accuracy_score(labels_test, pred))
     #print(pred)
     #print(confusion_matrix(labels_test, pred))
@@ -67,19 +67,19 @@ def grid_search(data_train,labels_train):
     grid_svm.fit(data_train, labels_train)
     print(grid_svm.best_params_)
 
-def predict(audio):
-    df = pd.read_csv("../data/features_30_sec.csv")
+def SVM_predict(audio):
+    df = pd.read_csv("data/features_30_sec.csv")
     df = df.drop(labels='filename', axis=1)
     standardizer=StandardScaler()
     data=standardizer.fit_transform(np.array(df.iloc[:,:-1],dtype=float))
-    csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
+    csv_file = csv.reader(open("data/features_30_sec.csv", "r"), delimiter=",")
     i=0
     for row in csv_file:
         if audio == row[0]:
             data=np.array([data[i]],dtype=float)
         i+=1
     if len(data) >0 :       
-        svm = joblib.load('model_svm.sav')
+        svm = joblib.load('models/model_svm.sav')
         print("----------------------------------- Predicted Labels -----------------------------------\n")
         preds = svm.predict(data)
         switcher = {
@@ -100,4 +100,3 @@ def predict(audio):
         print("")
         print("----------------------------------------------------------------------------------------")
         return func
-

@@ -1,12 +1,11 @@
-1
+
 .git
-2
-3
+
 .firebase
 
 .editorconfig
 
-/node_modules
+./node_modules
 
 /e2e
 

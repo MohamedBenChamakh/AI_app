@@ -1,0 +1,14 @@
+{
+    "/api/*": {
+      "target": "http://backend_flask:5000",
+      "secure": false,
+      "logLevel": "debug",
+      "changeOrigin": true,
+      "pathRewrite":{
+        "^/api": ""
+         },
+      " headers": {
+          "Connection": "keep-alive"
+      }
+    }
+}

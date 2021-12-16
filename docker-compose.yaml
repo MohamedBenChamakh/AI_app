@@ -2,14 +2,23 @@ version: '3.7'
 
 # Services
 services:
-  flask_svm:
+
+  backend_flask:
     build:
-      context: ./svm
+      context: ./backend
     ports:
       - 5000:5000
-  flask_vgg19:
+    volumes:
+      - ./backend:/usr/src/app
+
+
+  frontend_angular:
     build:
-      context: ./vgg19
+      context: ./frontend
     ports:
-      - 5001:5001
+      - 4200:4200
+    links:
+      - backend_flask
+
+
   

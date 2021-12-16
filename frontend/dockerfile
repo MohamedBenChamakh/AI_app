@@ -1,13 +1,15 @@
-FROM node:16
+FROM node:16-alpine as build-step
 
-RUN mkdir -p /app
+RUN mkdir /app
 
 WORKDIR /app
 
-COPY package.json /app
+COPY ./audio-classification/package.json /app
 
 RUN npm install
 
-COPY . /app
+COPY ./audio-classification /app
 
-RUN npm run build --prod
+EXPOSE 4200
+
+CMD npm start 

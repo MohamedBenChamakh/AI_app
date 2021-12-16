@@ -33,40 +33,40 @@ def vgg19():
 
     filenames=[]
 
-    df = pd.read_csv("../data/features_30_sec.csv")
+    df = pd.read_csv("data/features_30_sec.csv")
     df = df.drop(labels='filename', axis=1)
     labels=df.iloc[:,-1]
     encoder=LabelEncoder()
     labels=encoder.fit_transform(labels)
     
     for g in genre:
-        for (_,_,filenames) in os.walk('../data/images_original/'+g):
+        for (_,_,filenames) in os.walk('data/images_original/'+g):
             for f in filenames:
-                X.append(get_features('../data/images_original/'+g +'/'+ f,model))
+                X.append(get_features('data/images_original/'+g +'/'+ f,model))
 
     X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.08, random_state=42, stratify=labels)
 
     clf = LinearSVC(random_state=0, tol=1e-5)
     clf.fit(X_train, y_train)
 
-    modelname = 'model_vgg19.sav'
+    modelname = 'models/model_vgg19.sav'
     pickle.dump(clf, open(modelname, 'wb'))
     print("Accuracy on training set: {:.3f}".format(clf.score(X_train, y_train)))
     print("Accuracy on test set: {:.3f}".format(clf.score(X_test, y_test)))
     print('Train score : ', clf.score(X_train,y_train))
     print('Test score : ', clf.score(X_test,y_test))
 
-def predict(wav_music):
+def VGG_predict(wav_music):
     base_model = VGG19(weights='imagenet')
     model = Model(inputs=base_model.input, outputs=base_model.get_layer('flatten').output)
-    csv_file = csv.reader(open("../data/features_30_sec.csv", "r"), delimiter=",")
+    csv_file = csv.reader(open("data/features_30_sec.csv", "r"), delimiter=",")
     data=[]
     for row in csv_file:
         if wav_music == row[0]:
-            data=get_features('../data/images_original/'+row[-1] +'/'+ wav_music.replace(".","",1).replace("wav","png",1),model)
+            data=get_features('data/images_original/'+row[-1] +'/'+ wav_music.replace(".","",1).replace("wav","png",1),model)
     
     if len(data) >0 :       
-            svm = joblib.load('model_vgg19.sav')
+            svm = joblib.load('models/model_vgg19.sav')
             print("----------------------------------- Predicted Labels -----------------------------------\n")
             predicted = svm.predict([data])
             switcher = {
